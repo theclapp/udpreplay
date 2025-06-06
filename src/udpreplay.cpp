@@ -75,15 +75,15 @@ int main(int argc, char *argv[]) {
     std::cerr
         << "udpreplay 1.0.0 © 2020 Erik Rigtorp <erik@rigtorp.se> "
            "https://github.com/rigtorp/udpreplay\n"
-           "usage: udpreplay [-i iface] [-l] [-s speed] [-c millisec] [-r "
+           "usage: udpreplay [-i iface] [-l] [-s speed] [-c microsec] [-r "
            "repeat] [-t ttl] "
            "pcap\n"
            "\n"
            "  -i iface    interface to send packets through\n"
            "  -l          enable loopback\n"
-           "  -c millisec constant milliseconds between packets\n"
+           "  -c microsec constant microseconds between packets\n"
            "  -r repeat   number of times to loop data (-1 for infinite loop)\n"
-           "  -s speed    replay speed relative to pcap timestamps\n"
+           "  -s speed    replay speed relative to pcap timestamps (< 1.0 is faster)\n"
            "  -t ttl      packet ttl\n"
            "  -b          enable broadcast (SO_BROADCAST)"
         << std::endl;
@@ -185,8 +185,8 @@ int main(int argc, char *argv[]) {
                                                   ip->ip_hl * 4);
       if (interval != -1) {
         // Use constant packet rate
-        deadline.tv_sec += interval / 1000L;
-        deadline.tv_nsec += (interval * 1000000L) % NANOSECONDS_PER_SECOND;
+        deadline.tv_sec += interval / 1000000L;
+        deadline.tv_nsec += (interval * 1000L) % NANOSECONDS_PER_SECOND;
       } else {
         // Next packet deadline = start + (packet ts - first packet ts) * speed
         int64_t delta =
